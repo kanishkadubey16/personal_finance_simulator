@@ -3,10 +3,10 @@ import { fetchProfile, updateProfile } from '../api';
 import toast from 'react-hot-toast';
 
 export default function ProfileSettings() {
-  const [income, setIncome] = useState(0);
-  const [savings, setSavings] = useState(0);
-  const [investments, setInvestments] = useState(0);
-  const [baseMonthlyExpenses, setBaseMonthlyExpenses] = useState(0);
+  const [income, setIncome] = useState('');
+  const [savings, setSavings] = useState('');
+  const [investments, setInvestments] = useState('');
+  const [baseMonthlyExpenses, setBaseMonthlyExpenses] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -18,10 +18,11 @@ export default function ProfileSettings() {
     try {
       const data = await fetchProfile();
       if (!data.error) {
-        setIncome(data.income || 0);
-        setSavings(data.savings || 0);
-        setInvestments(data.investments || 0);
-        setBaseMonthlyExpenses(data.baseMonthlyExpenses || 0);
+        // We initialize with the values from DB, but allow them to be empty if they don't exist
+        setIncome(data.income || '');
+        setSavings(data.savings || '');
+        setInvestments(data.investments || '');
+        setBaseMonthlyExpenses(data.baseMonthlyExpenses || '');
       }
     } catch (err) {
       toast.error('Failed to load profile');
@@ -34,7 +35,13 @@ export default function ProfileSettings() {
     e.preventDefault();
     setSaving(true);
     try {
-      await updateProfile({ income, savings, investments, baseMonthlyExpenses });
+      // Convert to Number on submission
+      await updateProfile({ 
+        income: Number(income), 
+        savings: Number(savings), 
+        investments: Number(investments), 
+        baseMonthlyExpenses: Number(baseMonthlyExpenses) 
+      });
       toast.success('Profile updated successfully!');
     } catch (err) {
       toast.error('Failed to update profile');
@@ -55,8 +62,9 @@ export default function ProfileSettings() {
             <input
               type="number"
               className="input-field"
+              placeholder="e.g. 50000"
               value={income}
-              onChange={(e) => setIncome(Number(e.target.value))}
+              onChange={(e) => setIncome(e.target.value)}
               required
             />
           </div>
@@ -65,8 +73,9 @@ export default function ProfileSettings() {
             <input
               type="number"
               className="input-field"
+              placeholder="e.g. 100000"
               value={savings}
-              onChange={(e) => setSavings(Number(e.target.value))}
+              onChange={(e) => setSavings(e.target.value)}
               required
             />
           </div>
@@ -75,8 +84,9 @@ export default function ProfileSettings() {
             <input
               type="number"
               className="input-field"
+              placeholder="e.g. 25000"
               value={investments}
-              onChange={(e) => setInvestments(Number(e.target.value))}
+              onChange={(e) => setInvestments(e.target.value)}
               required
             />
           </div>
@@ -85,8 +95,9 @@ export default function ProfileSettings() {
             <input
               type="number"
               className="input-field"
+              placeholder="e.g. 30000"
               value={baseMonthlyExpenses}
-              onChange={(e) => setBaseMonthlyExpenses(Number(e.target.value))}
+              onChange={(e) => setBaseMonthlyExpenses(e.target.value)}
               required
             />
           </div>
