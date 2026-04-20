@@ -1,17 +1,33 @@
 import { createContext, useState, useEffect } from 'react';
+import { fetchMe } from '../api';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // for initial load
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      setUser(JSON.parse(userInfo));
-    }
-    setLoading(false);
+    const initAuth = async () => {
+      const userInfo = localStorage.getItem('userInfo');
+      if (userInfo) {
+        try {
+          const parsed = JSON.parse(userInfo);
+          // Silent verification with backend
+          const data = await fetchMe();
+          if (data && !data.error) {
+            setUser({ ...parsed, ...data });
+          } else {
+            localStorage.removeItem('userInfo');
+          }
+        } catch (err) {
+          localStorage.removeItem('userInfo');
+        }
+      }
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const login = (userData) => {

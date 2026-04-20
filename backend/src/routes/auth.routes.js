@@ -35,10 +35,13 @@ router.post('/register', async (req, res) => {
         token: generateToken(user._id),
       });
     } else {
-      res.status(400).json({ error: 'Invalid user data' });
+      res.status(400).json({ error: 'Invalid user data provided' });
     }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (err.code === 11000) {
+      return res.status(400).json({ error: 'An account with this email already exists' });
+    }
+    res.status(500).json({ error: 'Registration failed. Please try again later.' });
   }
 });
 
@@ -60,7 +63,7 @@ router.post('/login', async (req, res) => {
       res.status(401).json({ error: 'Invalid email or password' });
     }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Login failed. Please check your credentials.' });
   }
 });
 

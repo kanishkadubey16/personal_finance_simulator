@@ -103,3 +103,8 @@ export const fetchAdvice = async () => {
   const res = await fetch(`${API_URL}/advice`, { headers: getAuthHeaders() });
   return res.json();
 };
+
+export const fetchMe = async () => {
+  const res = await fetch(`${API_URL}/auth/me`, { headers: getAuthHeaders() });
+  return res.json();
+};
