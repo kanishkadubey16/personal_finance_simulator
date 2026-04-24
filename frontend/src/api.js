@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 const getAuthHeaders = () => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -14,7 +14,9 @@ export const registerUser = async (data) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || 'Registration failed');
+  return result;
 };
 
 export const loginUser = async (data) => {
@@ -23,12 +25,16 @@ export const loginUser = async (data) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || 'Login failed');
+  return result;
 };
 
 export const fetchProfile = async () => {
   const res = await fetch(`${API_URL}/profile?_t=${Date.now()}`, { headers: getAuthHeaders() });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to fetch profile' };
+  return result;
 };
 
 export const updateProfile = async (data) => {
@@ -37,12 +43,16 @@ export const updateProfile = async (data) => {
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to update profile' };
+  return result;
 };
 
 export const fetchExpenses = async () => {
   const res = await fetch(`${API_URL}/expenses?_t=${Date.now()}`, { headers: getAuthHeaders() });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to fetch expenses' };
+  return result;
 };
 
 export const addExpense = async (data) => {
@@ -51,7 +61,9 @@ export const addExpense = async (data) => {
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to add expense' };
+  return result;
 };
 
 export const deleteExpense = async (id) => {
@@ -59,12 +71,16 @@ export const deleteExpense = async (id) => {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to delete expense' };
+  return result;
 };
 
 export const fetchGoals = async () => {
   const res = await fetch(`${API_URL}/goals?_t=${Date.now()}`, { headers: getAuthHeaders() });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to fetch goals' };
+  return result;
 };
 
 export const addGoal = async (data) => {
@@ -73,7 +89,9 @@ export const addGoal = async (data) => {
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to add goal' };
+  return result;
 };
 
 export const deleteGoal = async (id) => {
@@ -81,7 +99,9 @@ export const deleteGoal = async (id) => {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to delete goal' };
+  return result;
 };
 
 export const updateGoal = async (id, data) => {
@@ -90,21 +110,29 @@ export const updateGoal = async (id, data) => {
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to update goal' };
+  return result;
 };
 
 export const fetchSimulation = async (params = {}) => {
   const query = new URLSearchParams(params).toString();
   const res = await fetch(`${API_URL}/simulation?${query}`, { headers: getAuthHeaders() });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to fetch simulation' };
+  return result;
 };
 
 export const fetchAdvice = async () => {
   const res = await fetch(`${API_URL}/advice`, { headers: getAuthHeaders() });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to fetch advice' };
+  return result;
 };
 
 export const fetchMe = async () => {
   const res = await fetch(`${API_URL}/auth/me`, { headers: getAuthHeaders() });
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw { status: res.status, message: result.error || 'Failed to fetch user data' };
+  return result;
 };

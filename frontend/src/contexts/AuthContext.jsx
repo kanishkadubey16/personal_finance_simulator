@@ -10,17 +10,21 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const userInfo = localStorage.getItem('userInfo');
-      if (userInfo) {
+      const storedInfo = localStorage.getItem('userInfo');
+      if (storedInfo) {
         try {
+          const userInfo = JSON.parse(storedInfo);
           const data = await fetchMe();
           if (data && !data.error) {
-            setUser(data);
+            // Merge stored token with fresh user data from server
+            setUser({ ...data, token: userInfo.token });
           } else {
             localStorage.removeItem('userInfo');
+            setUser(null);
           }
         } catch (err) {
           localStorage.removeItem('userInfo');
+          setUser(null);
         }
       }
       // Added a slight artificial delay so the user "feels" the security check
@@ -40,6 +44,12 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('userInfo');
     setUser(null);
+  };
+
+  const handleAuthError = (err) => {
+    if (err?.status === 401) {
+      logout();
+    }
   };
 
   if (loading) {
@@ -72,7 +82,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, handleAuthError }}>
       {children}
     </AuthContext.Provider>
   );

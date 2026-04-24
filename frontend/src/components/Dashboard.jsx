@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { fetchProfile, fetchExpenses, addExpense, fetchGoals, addGoal, deleteGoal, updateGoal } from '../api';
+import { AuthContext } from '../contexts/AuthContext';
 import { Wallet, PiggyBank, Receipt, AlertTriangle, Plus, Target, Trash2, Edit2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -7,6 +8,8 @@ export default function Dashboard() {
   const [profile, setProfile] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [goals, setGoals] = useState([]);
+
+  const { handleAuthError } = useContext(AuthContext);
 
   // Expense Form State
   const [expAmount, setExpAmount] = useState('');
@@ -29,9 +32,9 @@ export default function Dashboard() {
   }, []);
 
   const loadData = () => {
-    fetchProfile().then(setProfile).catch(console.error);
-    fetchExpenses().then(setExpenses).catch(console.error);
-    fetchGoals().then(setGoals).catch(console.error);
+    fetchProfile().then(setProfile).catch(handleAuthError);
+    fetchExpenses().then(setExpenses).catch(handleAuthError);
+    fetchGoals().then(setGoals).catch(handleAuthError);
   };
 
   const handleAddExpense = async (e) => {

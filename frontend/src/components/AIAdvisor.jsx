@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { fetchAdvice } from '../api';
+import { AuthContext } from '../contexts/AuthContext';
 import { Sparkles, Bot, Loader2 } from 'lucide-react';
 
 export default function AIAdvisor() {
   const [advice, setAdvice] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { handleAuthError } = useContext(AuthContext);
 
   const handleGetAdvice = async () => {
     setLoading(true);
@@ -16,6 +18,7 @@ export default function AIAdvisor() {
       setAdvice(data.advice || []);
     } catch (err) {
       setError(err.message);
+      handleAuthError(err);
     } finally {
       setLoading(false);
     }

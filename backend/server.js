@@ -12,7 +12,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Basic Route
+// ✅ ROOT ROUTE (ADD THIS)
+app.get('/', (req, res) => {
+  res.send('Personal Finance Simulator API is running 🚀');
+});
+
+// Basic Health Route
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running' });
 });

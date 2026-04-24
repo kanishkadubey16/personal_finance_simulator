@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { fetchProfile, updateProfile } from '../api';
+import { AuthContext } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 export default function ProfileSettings() {
@@ -9,6 +10,7 @@ export default function ProfileSettings() {
   const [baseMonthlyExpenses, setBaseMonthlyExpenses] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { handleAuthError } = useContext(AuthContext);
 
   useEffect(() => {
     loadProfile();
@@ -26,6 +28,7 @@ export default function ProfileSettings() {
       }
     } catch (err) {
       toast.error('Failed to load profile');
+      handleAuthError(err);
     } finally {
       setLoading(false);
     }
@@ -45,6 +48,7 @@ export default function ProfileSettings() {
       toast.success('Profile updated successfully!');
     } catch (err) {
       toast.error('Failed to update profile');
+      handleAuthError(err);
     } finally {
       setSaving(false);
     }

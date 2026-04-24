@@ -17,12 +17,21 @@ router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     
     if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Please add all fields' });
+      return res.status(400).json({ error: 'Please provide all required fields' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Please provide a valid email address' });
     }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: 'An account with this email already exists' });
     }
 
     const user = await User.create({ name, email, password });
@@ -35,13 +44,11 @@ router.post('/register', async (req, res) => {
         token: generateToken(user._id),
       });
     } else {
-      res.status(400).json({ error: 'Invalid user data provided' });
+      res.status(400).json({ error: 'Could not create user. Please try again.' });
     }
   } catch (err) {
-    if (err.code === 11000) {
-      return res.status(400).json({ error: 'An account with this email already exists' });
-    }
-    res.status(500).json({ error: 'Registration failed. Please try again later.' });
+    console.error('Registration Error:', err);
+    res.status(500).json({ error: 'Server error during registration. Please try again later.' });
   }
 });
 
@@ -49,6 +56,10 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Please provide both email and password' });
+    }
 
     const user = await User.findOne({ email });
 
@@ -63,7 +74,8 @@ router.post('/login', async (req, res) => {
       res.status(401).json({ error: 'Invalid email or password' });
     }
   } catch (err) {
-    res.status(500).json({ error: 'Login failed. Please check your credentials.' });
+    console.error('Login Error:', err);
+    res.status(500).json({ error: 'Server error during login. Please try again later.' });
   }
 });
 

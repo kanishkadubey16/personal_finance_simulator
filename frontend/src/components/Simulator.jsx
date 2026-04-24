@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { fetchSimulation, fetchProfile } from '../api';
+import { AuthContext } from '../contexts/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Sliders } from 'lucide-react';
 
@@ -7,16 +8,17 @@ export default function Simulator() {
   const [profile, setProfile] = useState(null);
   const [simData, setSimData] = useState(null);
   const [addedSavings, setAddedSavings] = useState(0);
+  const { handleAuthError } = useContext(AuthContext);
 
   useEffect(() => {
-    fetchProfile().then(setProfile).catch(console.error);
+    fetchProfile().then(setProfile).catch(handleAuthError);
     loadSimulation();
   }, []);
 
   const loadSimulation = (savingsInc = 0) => {
     fetchSimulation({ addedSavings: savingsInc })
       .then(setSimData)
-      .catch(console.error);
+      .catch(handleAuthError);
   };
 
   const handleSliderChange = (e) => {
